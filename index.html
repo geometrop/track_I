@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <style>  
+    body {
+  background-color: #ffffff; /* Change this color to the background color you want */
+}
+
+  .video-container {
+    border: 10px solid #fefefe; /* Add a 10px border around the video container */
+    margin-bottom: 10px; 
+    margin-left: 10px;
+    margin-right: 10px;
+    display: inline-block; /* Display videos inline-block */
+    margin: 10px; /* Add margin to create space between videos */
+  }
+</style>
+
+</head>
+<body>
+  <div id="playerContainer"></div>
+  <button onclick="startRandomPlayback()">PIXETROPE VII <i>(click to begin audio-tonomous playback)</i></button>
+
+  <script>
+     var videos = [
+      { id: 'gCZvVLmVdnU', start: getRandomInt(0, 4000) }
+      // Add more video IDs and start times as needed
+    ];
+
+    var players = [];
+
+    function getRandomInt(min, max) {
+      min = Math.ceil(min);
+      max = Math.floor(max);
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function createPlayer(playerId, videoId) {
+      return new YT.Player(playerId, {
+        height: '180',
+        width: '320',
+        videoId: videoId,
+        playerVars: {
+          autoplay: 1,
+        },
+        
+        events: {
+          onReady: function (event) {
+            players.push(event.target);
+            startRandomJump(event.target);
+          },
+        },
+      });
+    }
+
+    function startRandomPlayback() {
+      for (var i = 0; i < players.length; i++) {
+        var player = players[i];
+        var shouldPlay = Math.random() < 0.5; // 50% chance of stopping playback
+        if (shouldPlay) {
+          var startTime = getRandomInt(0, 2000);
+          player.seekTo(startTime);
+          player.playVideo();
+        } else {
+          player.stopVideo();
+        }
+      }
+    }
+
+
+
+    
+
+    function startRandomJump(player) {
+      setTimeout(function () {
+       
+        var shouldPlay = Math.random() < 0.5; // 50% chance of stopping playback
+        if (shouldPlay) {
+          var newStartTime = getRandomInt(0, 5000);
+          player.seekTo(newStartTime);
+          player.playVideo();
+         
+        } else {
+          player.stopVideo();
+        }
+        startRandomJump(player);
+      }
+      , getRandomInt(5, 80) * 1000);
+    }
+
+    function startRandomPlayback() {
+      for (var i = 0; i < players.length; i++) {
+        var player = players[i];
+        var startTime = getRandomInt(0, 4000);
+        player.seekTo(startTime);
+        player.playVideo();
+        scheduleRandomPause(player);
+      }
+    }
+
+    function startRandomJump(player) {
+      setTimeout(function () {
+        var newStartTime = getRandomInt(0, 4000);
+        player.seekTo(newStartTime);
+        player.playVideo();
+        scheduleRandomPause(player);
+        startRandomJump(player);
+      }, getRandomInt(4, 100) * 1000);
+    }
+
+    function scheduleRandomPause(player) {
+      var pauseTime = getRandomInt(4, 100) * 1000; // Random pause time between 2 to 10 seconds
+      setTimeout(function () {
+        player.pauseVideo();
+        setTimeout(function () {
+          player.playVideo();
+        }, getRandomInt(4, 80) * 1000); // Resume after a random delay
+        scheduleRandomPause(player); // Schedule the next pause
+      }, pauseTime);
+    }
+
+    // Callback function when YouTube Iframe API is ready
+    function onYouTubeIframeAPIReady() {
+      for (var i = 0; i < videos.length; i++) {
+        var playerId = 'player-' + i;
+        var playerDiv = document.createElement('div');
+        playerDiv.id = playerId;
+        document.getElementById('playerContainer').appendChild(playerDiv);
+        
+        var player = createPlayer(playerId, videos[i].id);
+        players.push(player);
+      }
+    }
+  </script>
+</body>
+</html>
